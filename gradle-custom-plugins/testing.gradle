@@ -1,0 +1,20 @@
+String openIndexCommand = System.properties['os.name'].toLowerCase().contains('windows') ? 'start' : 'open'
+
+task openJacopReports(type: Exec) {
+    workingDir './build/reports/jacoco/test/html'
+    commandLine openIndexCommand, './index.html'
+}
+
+task openTestReports(type: Exec) {
+    workingDir './build/reports/tests/test'
+    commandLine openIndexCommand, './index.html'
+    dependsOn(test)
+    if (project.hasProperty('coverage')) {
+        finalizedBy(openJacopReports)
+    }
+}
+
+test {
+    useJUnitPlatform();
+    finalizedBy(openTestReports)
+}

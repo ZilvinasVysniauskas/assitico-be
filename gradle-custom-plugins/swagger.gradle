@@ -1,0 +1,5 @@
+//works on linux only
+//todo configure on windows
+task openSwagger(type: Exec) {
+    commandLine 'google-chrome', 'http://localhost:' + project.PORT + '/swagger-ui/index.html'
+}

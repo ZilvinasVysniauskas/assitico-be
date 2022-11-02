@@ -1,22 +1,53 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.4'
-	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id 'com.avast.gradle.docker-compose' version '0.16.9'
 }
+project.ext.set('PORT', '8888')
+
+apply from: './gradle-custom-plugins/testing.gradle'
+apply from: './gradle-custom-plugins/boot.gradle'
+apply from: './gradle-custom-plugins/swagger.gradle'
 
 group = 'com.assistico'
-version = '0.0.1-SNAPSHOT'
+version = '0.1'
 sourceCompatibility = '17'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+}
+
+jar {
+    enabled = false
 }
 
 dependencies {
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.7.0'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.23'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.7.4'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.7.0'
+
+    //mapping to json
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.0-rc1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.4'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation group: 'org.pitest', name: 'pitest-maven', version: '1.7.4'
+
+    //data
+    implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
+    implementation 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation group: 'org.hibernate', name: 'hibernate-validator', version: '7.0.1.Final'
+
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
+
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
+
+
+
+

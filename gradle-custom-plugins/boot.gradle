@@ -1,0 +1,12 @@
+dockerCompose {
+    if (project.hasProperty('args')) {
+        forceRecreate = true
+    }
+    useComposeFiles = ['docker-compose.yml']
+}
+dockerCompose.isRequiredBy(bootRun)
+
+bootRun {
+    args += ["--server.port=" + project.PORT]
+}
+

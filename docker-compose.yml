@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  db:
+    image: 'postgres:13.1-alpine'
+    restart: always
+    container_name: db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=assisticodb
+  adminer:
+    image: adminer
+    restart: always
+    container_name: admin
+    ports:
+      - 8080:8080
+volumes:
+  db-data:
+    driver: local
+
