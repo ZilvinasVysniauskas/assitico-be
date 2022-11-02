@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  assistico:
+    build:
+      context: .
+    container_name: assistico
+    ports:
+      - 8787:8787
+      - 8787:8787
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/assisticodb
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - db
+  db:
+    image: 'postgres:13.1-alpine'
+    restart: always
+    container_name: db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=assisticodb
+  adminer:
+    image: adminer
+    restart: always
+    container_name: admin
+    ports:
+      - 8080:8080
+volumes:
+  db-data:
+    driver: local
+
