@@ -48,15 +48,22 @@ dependencies {
     //todo Review security dependencies
     implementation "org.springframework.boot:spring-boot-starter-security"
 
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.3'
+
     implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
 
+    implementation group: 'org.springframework.ldap', name: 'spring-ldap-core', version: '3.0.0'
+    implementation group: 'org.springframework.security', name: 'spring-security-ldap'
+
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
 
     //todo end
+    //mail senders
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
 
     implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
-
 
 }
 

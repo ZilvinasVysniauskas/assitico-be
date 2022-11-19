@@ -3,6 +3,9 @@ package com.assistico.planner.exceptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.assistico.planner.utils.conditions.IsProdEnvironment;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +17,30 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
+//todo change implementation to check for environment, currently class just returns false
+@Conditional(IsProdEnvironment.class)
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     //todo create two environments for handling exceptions
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        ex.printStackTrace();
+        return createResponseEntityWithMessage(ex, "server error");
+    }
+
+    @ExceptionHandler(UserNotFoundByEmailToken.class)
+    public final ResponseEntity<Object> handleUserNotFoundByToken(Exception ex, WebRequest request) {
+        return createResponseEntityWithMessage(ex, "user not found by email token");
+    }
+
+    @ExceptionHandler(ConfirmationEmailNotSentException.class)
+    public final ResponseEntity<Object> handleConfirmationEmailNotSent(Exception ex, WebRequest request) {
+        return createResponseEntityWithMessage(ex, "confirmation email not sent");
+    }
+
+    private ResponseEntity<Object> createResponseEntityWithMessage(Exception ex, String message) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse("Server Error", details);
+        ErrorResponse error = new ErrorResponse(message, details);
         return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
