@@ -1,4 +1,4 @@
-package com.assistico.planner.service.login;
+package com.assistico.planner.service.auth;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

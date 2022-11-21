@@ -1,4 +1,4 @@
-package com.assistico.planner.repository;
+package com.assistico.planner.repository.user;
 
 import com.assistico.planner.model.User;
 import org.springframework.data.domain.Page;
@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Override
     Page<User> findAll(Pageable pageable);
+
+    Optional<User> findByEmail(String email);
 }

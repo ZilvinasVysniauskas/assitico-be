@@ -2,6 +2,7 @@ package com.assistico.planner.exceptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.assistico.planner.utils.conditions.IsProdEnvironment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -49,7 +51,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         List<String> details = new ArrayList<>();
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-            details.add(error.getDefaultMessage());
+            FieldError fieldError = (FieldError) error;
+            details.add("Field: " + fieldError.getField() + ". Message: " + fieldError.getDefaultMessage());
         }
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);

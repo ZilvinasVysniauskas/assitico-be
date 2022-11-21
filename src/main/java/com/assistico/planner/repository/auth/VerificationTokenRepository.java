@@ -1,4 +1,4 @@
-package com.assistico.planner.repository;
+package com.assistico.planner.repository.auth;
 
 import com.assistico.planner.model.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;

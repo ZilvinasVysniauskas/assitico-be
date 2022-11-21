@@ -1,4 +1,4 @@
-package com.assistico.planner.service.login;
+package com.assistico.planner.service.auth;
 
 import com.assistico.planner.utils.NotificationEmail;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,13 @@ class MailService {
 
     private final MailMessageBuilder mailMessageBuilder;
     @Async
-    public void sendMail(NotificationEmail notificationEmail) throws MessagingException {
+    public void sendMail(String mail, String token) throws MessagingException {
+        NotificationEmail notificationEmail = NotificationEmail.builder()
+                .body("Click to verify email address, http://localhost:8888/api/auth/accountVerification/"
+                        + token)
+                .subject("subject")
+                .recipient(mail)
+                .build();
         MimeMessage mailMessage = mailMessageBuilder.getMailMessage(notificationEmail);
         Transport.send(mailMessage);
     }

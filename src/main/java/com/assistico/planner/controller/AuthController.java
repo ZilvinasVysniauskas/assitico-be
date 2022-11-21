@@ -7,8 +7,8 @@ import com.assistico.planner.dto.request.RegistrationRequest;
 import com.assistico.planner.exceptions.ConfirmationEmailNotSentException;
 import com.assistico.planner.exceptions.InvalidRefreshTokenException;
 import com.assistico.planner.exceptions.UserNotFoundByEmailToken;
-import com.assistico.planner.service.login.AuthService;
-import com.assistico.planner.service.login.RefreshTokenService;
+import com.assistico.planner.service.auth.AuthService;
+import com.assistico.planner.service.auth.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
-    public AuthenticationResponse register(@RequestBody RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
+    public AuthenticationResponse register(@Valid @RequestBody RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
         return authService.register(registrationRequest);
     }
 
@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+    public AuthenticationResponse login(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 

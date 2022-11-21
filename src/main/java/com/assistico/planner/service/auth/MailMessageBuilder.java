@@ -1,4 +1,4 @@
-package com.assistico.planner.service.login;
+package com.assistico.planner.service.auth;
 
 import com.assistico.planner.utils.NotificationEmail;
 import lombok.AllArgsConstructor;

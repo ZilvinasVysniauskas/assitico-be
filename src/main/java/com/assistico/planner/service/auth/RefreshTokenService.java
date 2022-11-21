@@ -1,8 +1,8 @@
-package com.assistico.planner.service.login;
+package com.assistico.planner.service.auth;
 
 import com.assistico.planner.exceptions.InvalidRefreshTokenException;
 import com.assistico.planner.model.RefreshToken;
-import com.assistico.planner.repository.RefreshTokenRepository;
+import com.assistico.planner.repository.auth.RefreshTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

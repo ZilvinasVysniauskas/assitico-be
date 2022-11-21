@@ -4,6 +4,8 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.avast.gradle.docker-compose' version '0.16.9'
+    id 'com.diffplug.eclipse.apt' version '3.37.2'
+
 }
 project.ext.set('PORT', '8888')
 
@@ -21,6 +23,14 @@ repositories {
 
 jar {
     enabled = false
+}
+
+compileJava {
+    options.compilerArgs += [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+            '-Amapstruct.verbose=true'
+    ]
 }
 
 dependencies {
@@ -69,7 +79,13 @@ dependencies {
     //--
 
     //mapping
-    implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.4.2.Final'
+    implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+    implementation group: 'org.passay', name: 'passay', version: '1.6.2'
+
 }
 
 
