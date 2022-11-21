@@ -4,10 +4,12 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'com.avast.gradle.docker-compose' version '0.16.9'
+    id 'com.diffplug.eclipse.apt' version '3.37.2'
+
 }
 project.ext.set('PORT', '8888')
 
-apply from: './gradle-custom-plugins/testing.gradle'
+//apply from: './gradle-custom-plugins/testing.gradle'
 apply from: './gradle-custom-plugins/boot.gradle'
 apply from: './gradle-custom-plugins/swagger.gradle'
 
@@ -21,6 +23,14 @@ repositories {
 
 jar {
     enabled = false
+}
+
+compileJava {
+    options.compilerArgs += [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+            '-Amapstruct.verbose=true'
+    ]
 }
 
 dependencies {
@@ -37,7 +47,7 @@ dependencies {
 
     //data
     implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.30'
     implementation 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -45,7 +55,39 @@ dependencies {
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 
+    //todo Review security dependencies
+    implementation "org.springframework.boot:spring-boot-starter-security"
+
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.3'
+
+    implementation group: 'org.thymeleaf', name: 'thymeleaf-spring5', version: '3.0.11.RELEASE'
+
+    implementation group: 'org.springframework.ldap', name: 'spring-ldap-core', version: '3.0.0'
+    implementation group: 'org.springframework.security', name: 'spring-security-ldap'
+
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+
+    //todo end
+
+    //mail senders
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
+
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
+    //--
+
+    //mapping
+    implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.5.3.Final'
+
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
+    implementation group: 'org.passay', name: 'passay', version: '1.6.2'
+
 }
+
 
 
 

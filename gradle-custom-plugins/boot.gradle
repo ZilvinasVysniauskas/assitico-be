@@ -1,10 +1,17 @@
 dockerCompose {
-    if (project.hasProperty('args')) {
+    if (project.hasProperty('restart')) {
         forceRecreate = true
     }
-    useComposeFiles = ['docker-compose.yml']
+    if (project.hasProperty('local')) {
+        useComposeFiles = ['docker-compose-local.yml']
+    } else {
+        useComposeFiles = ['docker-compose.yml']
+    }
+
 }
 dockerCompose.isRequiredBy(bootRun)
+
+
 
 bootRun {
     args += ["--server.port=" + project.PORT]

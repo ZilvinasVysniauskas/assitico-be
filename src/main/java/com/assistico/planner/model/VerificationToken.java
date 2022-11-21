@@ -1,29 +1,26 @@
 package com.assistico.planner.model;
 
-import com.assistico.planner.utils.Points;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import java.time.Instant;
 
+@NoArgsConstructor
 @Entity
 @Builder
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Task implements Serializable {
+@Data
+public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
+    private String token;
 
-    String title;
-
-    Points points;
-
-    String description;
-
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
+    private Instant expiryDate;
 }
