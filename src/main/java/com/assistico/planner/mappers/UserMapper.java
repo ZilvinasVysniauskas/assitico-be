@@ -1,4 +1,4 @@
-package com.assistico.planner.dto.mappers;
+package com.assistico.planner.mappers;
 
 import com.assistico.planner.dto.request.RegistrationRequest;
 import com.assistico.planner.model.User;

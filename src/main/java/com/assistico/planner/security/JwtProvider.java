@@ -25,6 +25,7 @@ public class JwtProvider {
     }
 
     public String generateTokenWithUserName(String username) {
+        System.out.println(Instant.now().plusMillis(jwtExpirationInMillis));
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(Instant.now())

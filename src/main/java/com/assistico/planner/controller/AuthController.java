@@ -2,14 +2,20 @@ package com.assistico.planner.controller;
 
 import com.assistico.planner.dto.api.AuthenticationResponse;
 import com.assistico.planner.dto.request.LoginRequest;
+import com.assistico.planner.dto.request.RefreshTokenRequest;
 import com.assistico.planner.dto.request.RegistrationRequest;
 import com.assistico.planner.exceptions.ConfirmationEmailNotSentException;
+import com.assistico.planner.exceptions.InvalidRefreshTokenException;
 import com.assistico.planner.exceptions.UserNotFoundByEmailToken;
 import com.assistico.planner.service.login.AuthService;
+import com.assistico.planner.service.login.RefreshTokenService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,9 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
-    public String register(@RequestBody RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
+    public AuthenticationResponse register(@RequestBody RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
         return authService.register(registrationRequest);
     }
 
@@ -32,5 +39,17 @@ public class AuthController {
     public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
+
+    @PostMapping("/refresh/token")
+    public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws InvalidRefreshTokenException {
+        return authService.refreshToken(refreshTokenRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+        return ResponseEntity.status(OK).body("Refresh Token Deleted Successfully!!");
+    }
+
 
 }

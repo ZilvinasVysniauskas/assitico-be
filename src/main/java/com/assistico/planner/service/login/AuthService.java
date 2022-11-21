@@ -1,10 +1,12 @@
 package com.assistico.planner.service.login;
 
 import com.assistico.planner.dto.api.AuthenticationResponse;
-import com.assistico.planner.dto.mappers.UserMapper;
+import com.assistico.planner.mappers.UserMapper;
 import com.assistico.planner.dto.request.LoginRequest;
+import com.assistico.planner.dto.request.RefreshTokenRequest;
 import com.assistico.planner.dto.request.RegistrationRequest;
 import com.assistico.planner.exceptions.ConfirmationEmailNotSentException;
+import com.assistico.planner.exceptions.InvalidRefreshTokenException;
 import com.assistico.planner.exceptions.UserNotFoundByEmailToken;
 import com.assistico.planner.model.User;
 import com.assistico.planner.model.VerificationToken;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,9 +38,10 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
-    public String register(RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
+    public AuthenticationResponse register(RegistrationRequest registrationRequest) throws ConfirmationEmailNotSentException {
         User user = UserMapper.registrationRequestToUser(registrationRequest, passwordEncoder);
         //todo add logic to resend email confirmation
         try {
@@ -50,7 +54,12 @@ public class AuthService {
                             .subject("subject")
                             .recipient(user.getEmail())
                             .build());
-            return "Registration successful";
+            return AuthenticationResponse.builder()
+                    .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                    .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                    .authenticationToken(jwtProvider.generateTokenWithUserName(registrationRequest.getUsername()))
+                    .username(registrationRequest.getUsername())
+                    .build();
         } catch (MessagingException e) {
             throw new ConfirmationEmailNotSentException("Registration failed " + e.getMessage());
         }
@@ -61,6 +70,7 @@ public class AuthService {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(token)
+                .expiryDate(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .user(user).build();
         verificationTokenRepository.save(verificationToken);
         return token;
@@ -80,13 +90,32 @@ public class AuthService {
     }
 
     public AuthenticationResponse login(LoginRequest loginRequest) {
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+        Authentication authenticate = getAuthentication(loginRequest.getUsername(), loginRequest.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         return AuthenticationResponse.builder()
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .authenticationToken(jwtProvider.generateToken(authenticate))
                 .username(loginRequest.getUsername())
+                .build();
+    }
+
+    private Authentication getAuthentication(String username, String password) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        username,
+                        password
+                ));
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws InvalidRefreshTokenException {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(refreshTokenRequest.getUsername())
                 .build();
     }
 }
