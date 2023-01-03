@@ -55,8 +55,9 @@ public class SecurityConfig {
         httpSecurity.cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/api/auth/**")
-                        .permitAll()
+                        .antMatchers("/api/auth/**").permitAll()
+                        .antMatchers("/swagger-ui/**").permitAll()
+                        .antMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest()
                         .authenticated())
                 //todo analyse what is happening here
